@@ -1,0 +1,67 @@
+---
+title: "HW02 Report"
+author: "Ninh (Vincent) DO"
+date: "February 6, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1d
+```{r}
+theta = 1
+n = 1 : 100
+MSE_hat = 2 * theta ^ 2 / ((n + 1) * (n + 2))
+MSE_tilde = theta ^ 2 / (3 * n)
+plot(n, MSE_hat, type = "o", col = "blue", xlab = "n", ylab = "MSE")
+lines(n, MSE_tilde, type = "o", col = "red")
+legend(70, 0.3, legend=c("MSE_hat", "MSE_tilde"),
+       col=c("blue", "red"), lty=c(1, 1), cex=0.8)
+```
+
+When n is small, prefer theta_hat.
+
+## Problem 6
+
+Working with data on the magnitudes of earthquakes near Fiji
+
+```{r}
+quakes = read.table(file = "fijiquakes.dat", header = TRUE)
+head(quakes)
+
+hist(quakes$mag)
+
+n = length(quakes$mag)
+mag_cdf_func = ecdf(quakes$mag)
+mag_vec = levels(factor(quakes$mag))
+mag_cdf = mag_cdf_func(mag_vec)
+mag_cdf_lower = pmax(mag_cdf - (1 / (2 * n) * log(2 / 0.05)) ^ 0.5, 0)
+mag_cdf_lower
+mag_cdf_upper = pmin(mag_cdf + (1 / (2 * n) * log(2 / 0.05)) ^ 0.5, 1)
+mag_cdf_upper
+plot(mag_vec, mag_cdf, type = "o", col = "blue", xlab = "magnitude", ylab = "Fn", main = "CDF of Magnitude with 95% Confidence Interval")
+lines(mag_vec, mag_cdf_lower, type = "l", col = "red")
+lines(mag_vec, mag_cdf_upper, type = "l", col = "red")
+```
+
+## Problem 7
+
+Working with data on cloud seeding
+
+```{r}
+clouds = read.table(file = "clouds.dat", header = TRUE)
+head(clouds)
+n = length(clouds$Seeded)
+theta = mean(clouds$Seeded) - mean(clouds$Unseeded)
+theta
+se_theta = (var(clouds$Seeded) / n + var(clouds$Unseeded) / n) ^ 0.5
+se_theta
+
+# 95% confidence interval
+cf_95 = c(theta - 1.96 * se_theta, theta + 1.96 * se_theta)
+cf_95
+```
+
+
