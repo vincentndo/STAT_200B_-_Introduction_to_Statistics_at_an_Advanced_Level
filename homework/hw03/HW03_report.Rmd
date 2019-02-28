@@ -1,0 +1,79 @@
+---
+title: "HW03 Report"
+author: "Ninh (Vincent) DO"
+date: "February 13, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1
+
+```{r}
+clouds = read.table(file = "clouds.dat", header = TRUE)
+n = length(clouds$Seeded)
+
+# Difference in median precipitation
+theta_hat = median(clouds$Seeded) - median(clouds$Unseeded)
+theta_hat
+
+# Bootstrap to estimate the standard error
+B = 1000
+theta_hat_bootstrapped = rep(0, B)
+for (i in 1 : B) {
+  index = sample(1 : n, n, replace = TRUE)
+  seeded_star = clouds$Seeded[index]
+  unseeded_star = clouds$Unseeded[index]
+  theta_hat_bootstrapped[i] = median(seeded_star) - median(unseeded_star)
+}
+theta_hat_se = var(theta_hat_bootstrapped) ^ 0.5
+theta_hat_se
+
+# 95% Normal confidence interval
+cf_95 = c(theta_hat - 1.96 * theta_hat_se, theta_hat + 1.96 * theta_hat_se)
+cf_95
+```
+\newpage
+
+## Problem 3
+
+```{r}
+bigcity = read.table(file = "bigcity.dat", header = TRUE)
+n = length(bigcity$x)
+
+# Plug-in estimator
+theta_hat = mean(bigcity$x) / mean(bigcity$u)
+theta_hat
+
+# Bootstrapping
+B = 1000
+theta_hat_bootstrapped = rep(0, B)
+for (i in 1 : B) {
+  index = sample(1 : n, n, replace = TRUE)
+  x_star = bigcity$x[index]
+  u_star = bigcity$u[index]
+  theta_hat_bootstrapped[i] = mean(x_star) / mean(u_star)
+}
+theta_hat_se = var(theta_hat_bootstrapped) ^ 0.5
+theta_hat_se
+
+# 95% bootstrap pivoral interval
+pv_95 = c(2 * theta_hat - quantile(theta_hat_bootstrapped, 0.975), 2 * theta_hat - quantile(theta_hat_bootstrapped, 0.025))
+pv_95
+```
+\newpage
+
+# Problem 7b
+
+```{r}
+data = c(22, 23.9, 20.9, 23.8, 25, 24, 21.7, 23.8, 22.8, 23.1, 23.1, 23.5, 23, 23)
+n = length(data)
+
+beta = max(data)
+beta
+alpha = n / (n * log(beta) - log(prod(data)))
+alpha
+```
+
