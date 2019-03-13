@@ -1,0 +1,50 @@
+---
+title: "HW05 Report"
+author: "Ninh (Vincent) DO"
+date: "March 7, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1b
+
+```{r}
+# Parameter of Poisson
+lambda_0 = 1
+
+# Number of data points and level of significance alpha
+n = 20
+alpha = 0.05
+
+# Number of experiment
+N = 500
+
+test_results = rep(0, N)
+p_values = rep(0, N)
+for (i in 1 : N) {
+  # Generate Poisson data
+  X = rpois(n, lambda_0)
+  
+  # Perform Wald test for Poisson
+  X_mean = mean(X)
+  se_hat = (X_mean / n) ^ 0.5
+  W = (X_mean - lambda_0) / se_hat
+  z_alpha_half = qnorm(1 - alpha / 2)    # or -qnorm(alpha / 2)
+  test_results[i] = abs(W) > z_alpha_half
+  p_values[i] = 2 * (1 - pnorm(abs(W)))    # or 2 * pnorm(-abs(W))
+}
+
+# Test results: 0 means accept null, 1 - reject null
+test_results
+
+# p-values
+p_values
+
+# The type I error rate
+sum(test_results) / N
+```
+
+The type I error rate is close to 0.05, but not equal. It is probably because the sample size is small (n = 20).
