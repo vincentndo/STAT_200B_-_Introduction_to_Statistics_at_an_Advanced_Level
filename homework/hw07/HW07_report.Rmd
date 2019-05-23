@@ -1,0 +1,116 @@
+---
+title: "HW07 Report"
+author: "Ninh (Vincent) DO"
+date: "March 21, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 2b
+
+```{r}
+library(MCMCpack)
+
+## Specify the prior distribution: Inverse Gamma
+
+m <- 300    # Prior mean
+v <- 900    # Prior variance
+
+alpha = m ^ 2 / v + 2
+beta = m * (alpha - 1)
+
+alpha
+beta
+
+## Plot the prior density
+
+x <- seq(0.01, 600, length = 1000)
+prior <- dinvgamma(x, shape = alpha, scale = beta) # the prior pdf
+plot(x, prior, type = "l", xlab = expression(lambda),
+     ylab = expression(p(lambda)), main = "Prior density")
+```
+
+The choice of m and v is based on my current knowledge that, over a couple of years, there were around ~4, 5 earthquakes in Berkeley.
+
+
+## Problem 2c
+
+```{r}
+## The data
+
+load("BerkeleyEarthquakes.RData")
+head(earthquakes)
+data <- earthquakes$Lag[-1]    # First element is NA
+
+n <- length(data)    # number of data points
+s <- sum(data)    # sum of data points
+
+## Update the parameters to get the posterior distribution
+
+alpha_new <- alpha + n
+beta_new <- beta + s
+
+alpha_new
+beta_new
+
+posterior <- dinvgamma(x, shape = alpha_new, scale = beta_new)
+
+## Plot the prior and posterior densities
+
+plot(x, prior, type = "l", xlab = expression(lambda), ylab = "",
+     ylim = range(c(prior, posterior)))
+lines(x, posterior, col = 2)
+legend("topleft", lty = rep(1, 2), col = 1:2,
+       legend = c("Prior", "Posterior"), bty = "n")
+```
+
+The data updates my knowledge towards reducing the mean and the variance because the data have smaller average time between earthquakes and smaller variance.
+
+\pagebreak
+
+## Problem 5c
+
+```{r}
+N = 10000
+
+mu = 10
+sigma2 = 4
+alpha = 9
+beta = 13
+
+data = rep(0, 1000)
+i = 1
+while (i <= N) {
+  x = rnorm(1, mean = mu, sd = sigma2 ^ 0.5)
+  if (x > alpha & x < beta) {
+    data[i] = x
+    i = i + 1
+  }
+}
+
+hist(data, breaks = 20)
+```
+
+\newpage
+
+## Problem 6b
+
+```{r}
+N = 10000
+p1 = rbeta(N, shape1 = 34, shape2 = 68)
+p2 = rbeta(N, shape1 = 39, shape2 = 63)
+delta = p2 - p1
+hist(delta, breaks = 20)
+```
+
+## Problem 6c
+
+```{r}
+# Posterior probability that delta > 0.04
+p = sum(delta > 0.04) / N
+p
+```
+
